@@ -19,6 +19,26 @@ void add_history(char* unused) {}
 #include <editline/history.h>
 #endif
 
+long evaluation(mpc_ast_t* t){
+  if(strstr(t->tag, "number")){
+    return atoi(t->contents);
+  }
+  char* op = t->children[1]->contents;
+  long x = evaluation(t->children[2]);
+  int i = 3;
+  while (strstr(t->children[i]->tag, "expr")){
+    x = eval_operation(x, op, evaluation(t->children[i]));
+    i++;
+  }
+}
+
+long eval_operation(long x, char* op, long y){
+  if(strcmp(op, "+") == 0){return x + y;}
+  if(strcmp(op, "-") == 0){return x - y;}
+  if(strcmp(op, "*") == 0){return x * y;}
+  if(strcmp(op, "/") == 0){return x / y};
+
+}
 
 int main(int argc, char** argv){
 
@@ -45,7 +65,8 @@ while (1){
 
   mpc_result_t r;
   if(mpc_parse("<stdin>", input, Lispy, &r)){
-    mpc_ast_print(r.output);
+    long result = evaluation(r.output);
+    printf("%li\n", result);
     mpc_ast_delete(r.output);
   }else{
     mpc_err_print(r.error);
@@ -54,6 +75,9 @@ while (1){
 
 free(input);
 }
+
+
+
 
 mpc_cleanup(4, Number, Operator, Expr, Lispy);
 
