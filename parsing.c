@@ -19,6 +19,16 @@ void add_history(char* unused) {}
 #include <editline/history.h>
 #endif
 
+
+long eval_operation(long x, char* op, long y){
+  if(strcmp(op, "+") == 0){return x + y;}
+  if(strcmp(op, "-") == 0){return x - y;}
+  if(strcmp(op, "*") == 0){return x * y;}
+  if(strcmp(op, "/") == 0){return x / y;}
+  return 0;
+}
+
+
 long evaluation(mpc_ast_t* t){
   if(strstr(t->tag, "number")){
     return atoi(t->contents);
@@ -30,15 +40,9 @@ long evaluation(mpc_ast_t* t){
     x = eval_operation(x, op, evaluation(t->children[i]));
     i++;
   }
+  return x;
 }
 
-long eval_operation(long x, char* op, long y){
-  if(strcmp(op, "+") == 0){return x + y;}
-  if(strcmp(op, "-") == 0){return x - y;}
-  if(strcmp(op, "*") == 0){return x * y;}
-  if(strcmp(op, "/") == 0){return x / y};
-
-}
 
 int main(int argc, char** argv){
 
